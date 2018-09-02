@@ -106,5 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="laynet.Database.LHS.publish.xml" />
+    <None Include="laynet.Database.hyose.publish.xml" />
   </ItemGroup>
 </Project>
