@@ -1,4 +1,0 @@
-SQLSERVER = 'tcp:192.168.46.1' 
-DATABASE = 'LAYNET' 
-USERNAME = 'sa' 
-PASSWORD = 'dlgytj2668' 
