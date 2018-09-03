@@ -1,10 +1,10 @@
 ﻿
 CREATE procedure [dbo].[sp_add_or_update_kospi200] (
-	@ranking INT,
+	@ranking TINYINT,
     @companyName VARCHAR(30),
     @stockCode CHAR(6),
 	@marketSum BIGINT,
-	@askingPriceUnit INT
+	@askingPriceUnit SMALLINT
 ) 
 AS
 BEGIN
