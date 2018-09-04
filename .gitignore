@@ -260,3 +260,5 @@ paket-files/
 __pycache__/
 *.pyc
 /laynet/chromedriver.exe
+/laynet/env
+/laynet/config.py
