@@ -18,18 +18,17 @@ def scrape_kospi_top200(driver):
 
         for stock in stocks:
             companyName = stock.text
-            code = stock.get_attribute('href')[-6:]
-        
-            kospiTop200.append([ranking, companyName, code])                                 
+            stockCode = stock.get_attribute('href')[-6:]
+            
+            kospiTop200.append({'ranking': ranking, 'companyName': companyName, 'stockCode': stockCode})
 
             ranking += 1
 
     for i in range(len(kospiTop200)):
-        stockCode = kospiTop200[i][2]
+        baseData = scrape_stock_base_data(driver, kospiTop200[i]['stockCode'])
 
-        baseData = scrape_stock_base_data(driver, stockCode)
-
-        db.addOrUpdateKospi200(kospiTop200[i][0], kospiTop200[i][1], kospiTop200[i][2], baseData[0], baseData[1])
+        db.addOrUpdateKospi200(kospiTop200[i]['ranking'], kospiTop200[i]['companyName']
+                               , kospiTop200[i]['stockCode'], baseData['marketSum'], baseData['askingPriceUnit'])
 
 def scrape_stock_base_data(driver, stockCode):
     driver.get(NAVER_FINANCE_BASE_URL + ITEM_ANALYSIS_URL % stockCode)
@@ -62,7 +61,7 @@ def scrape_stock_base_data(driver, stockCode):
     else:
         askingPriceUnit= 1000
     
-    return [marketSum, askingPriceUnit]
+    return {'marketSum': marketSum, 'askingPriceUnit': askingPriceUnit}
 
 def scrape_stock_trade_page_numbers(driver, stockCode):
     driver.get(NAVER_FINANCE_BASE_URL + TRADING_TREND_URL % (stockCode, 1))

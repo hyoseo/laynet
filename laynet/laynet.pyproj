@@ -22,7 +22,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="algorithm.py" />
-    <Compile Include="config.py" />
+    <Compile Include="config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="db.py" />
     <Compile Include="laynet.py" />
     <Compile Include="logger.py" />
