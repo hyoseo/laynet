@@ -26,13 +26,8 @@ BEGIN
 	DECLARE @institutionsVolumeSum BIGINT = 0
 	DECLARE @foreignersVolumeSum BIGINT = 0
 
-	DECLARE @institutionsMoneySum BIGINT = 0
-	DECLARE @foreignersMoneySum BIGINT = 0
-
 	DECLARE @beforeCurveStockPrice INT = 0
 	DECLARE @beforeCurveDate DATE
-	DECLARE @beforeCurveInstitutionsMoneySum BIGINT = 0
-	DECLARE @beforeCurveForeignersMoneySum BIGINT = 0
 	DECLARE @beforeCurveInstitutionsVolumeSum BIGINT = 0
 	DECLARE @beforeCurveForeignersVolumeSum BIGINT = 0
 
@@ -55,10 +50,6 @@ BEGIN
 				-- 이전 커브 날짜의 CurveDelta값 업데이트
 				SET @curveDayDelta = ROUND((CAST((@beforeCurveStockPrice - @stockPrice) AS FLOAT) / @stockPrice) * 100, 2)
 				UPDATE [dbo].[BigPlayersData] SET CurveDelta = @curveDayDelta 
-				, MoneyDelta = @institutionsMoneySum + @foreignersMoneySum - (@beforeCurveInstitutionsMoneySum + @beforeCurveForeignersMoneySum)
-				, InstitutionsMoneyDelta = @institutionsMoneySum - @beforeCurveInstitutionsMoneySum
-				, ForeignersMoneyDelta = @foreignersMoneySum - @beforeCurveForeignersMoneySum
-				, VolumeDelta = @institutionsVolumeSum + @foreignersVolumeSum - (@beforeCurveInstitutionsVolumeSum + @beforeCurveForeignersVolumeSum)
 				, InstitutionsVolumeDelta = @institutionsVolumeSum - @beforeCurveInstitutionsVolumeSum
 				, ForeignersVolumeDelta = @foreignersVolumeSum - @beforeCurveForeignersVolumeSum
 				WHERE StockCode = @stockCode AND CurveDate = @beforeCurveDate
@@ -67,35 +58,26 @@ BEGIN
 			SET @beforeCurveDate = @searchDate
 			SET @beforeCurveStockPrice = @stockPrice
 
-			SET @beforeCurveInstitutionsMoneySum = @institutionsMoneySum
-			SET	@beforeCurveForeignersMoneySum = @foreignersMoneySum
-
 			SET	@beforeCurveInstitutionsVolumeSum = @institutionsVolumeSum
 			SET	@beforeCurveForeignersVolumeSum  = @foreignersVolumeSum
 
 			IF EXISTS(SELECT @searchDate FROM [dbo].[BigPlayersData] WHERE StockCode = @stockCode AND CurveDate = @searchDate)
 			BEGIN
 				UPDATE [dbo].[BigPlayersData] SET 
-				MoneySum = @institutionsMoneySum + @foreignersMoneySum
-				, InstitutionsMoneySum = @institutionsMoneySum, ForeignersMoneySum = @foreignersMoneySum
-				, VolumeSum = @institutionsVolumeSum + @foreignersVolumeSum
-				, InstitutionsVolumeSum = @institutionsVolumeSum, ForeignersVolumeSum = @foreignersVolumeSum
+				InstitutionsVolumeSum = @institutionsVolumeSum
+				, ForeignersVolumeSum = @foreignersVolumeSum
 				WHERE StockCode = @stockCode AND CurveDate = @searchDate
 			END
 			ELSE
 			BEGIN
 				INSERT INTO [dbo].[BigPlayersData] VALUES
 				(@companyName, @stockCode, @searchDate, @curveType, @stockPrice, 0
-				, 0, 0, 0, @institutionsMoneySum + @foreignersMoneySum, @institutionsMoneySum, @foreignersMoneySum
-				, 0, 0, 0, @institutionsVolumeSum + @foreignersVolumeSum, @institutionsVolumeSum, @foreignersVolumeSum)
+				, 0, 0, @institutionsVolumeSum, @foreignersVolumeSum)
 			END
 		END
 
 		SET @institutionsVolumeSum += @institutionsVolume
 		SET @foreignersVolumeSum += @foreignersVolume
-
-		SET @institutionsMoneySum += @institutionsVolume * @stockPrice
-		SET @foreignersMoneySum += @foreignersVolume * @stockPrice
 	END
 
 	RETURN 0

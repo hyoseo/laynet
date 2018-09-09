@@ -179,12 +179,6 @@ def update_curve_type_and_delta(dayTradeList):
                 dayTradeList[prev][CURVE_TYPE] = dayTradeList[cur][CURVE_TYPE]
     return
 
-# 점수 알고리즘
-# 이전 CURVE값으로부터 얼마나 기관과 외인의 물량이 빠져나갔는지 계산하자.
-# 물량이 많더라도 그 날의 주가에 따라 빠져나간 금액은 달라진다.
-# 즉, 물량 * 주가를 토대로 실제 금액을 써넣어야 한다. 이 금액은 순위를 정하는데 쓰인다.
-# 테이블의 설계 BigPlayersTotalMoney(CompanyName, StockCode, CurveDay, CurveType, CurveDayPrice, Money, InstitutionMoney, ForeignersMoney, Volume, InstitutionVolume, ForeignersVolume)
-
 # 주식 호가 단위(10만원 이상은 500원씩)와 시총 대비 거래량 총 금액 비율도 중요하다.
 # MAX치의 0.1%이다. 즉, ~1000원 미만 : 1원, ~5000원, ~10000원, ~50000원, ~100000원, ~500000원, 50만원 이상
 # 즉, 비쌀 수록 단타에 유리하다.
@@ -199,6 +193,4 @@ def update_curve_type_and_delta(dayTradeList):
 # 변동빈도 점수 알고리즘
 # 30일 기준으로 얼마나 자주 Curve가 반복되었는지 계산한다. 이는 C++로 만들어 놓은 것을 확인하자.
 
-# 우상향 알고리즘
-
-# 점수 순서는 현재 빠져나간 금액 > 변동빈도 > 변동폭 > 우상향 이 순서대로 하자.
+# 점수 순서는 변동빈도 > 변동폭 > 우상향 이 순서대로 하자.
