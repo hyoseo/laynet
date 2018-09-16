@@ -1,0 +1,12 @@
+{
+  "name": "laynet.web",
+  "version": "0.0.0",
+  "description": "laynet.Web",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  },
+  "dependencies": {
+    "mssql": "^4.2.1"
+  }
+}

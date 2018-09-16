@@ -262,3 +262,4 @@ __pycache__/
 /laynet/chromedriver.exe
 /laynet/env
 /laynet/config.py
+/laynet.Web/config.js
