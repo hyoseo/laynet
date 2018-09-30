@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<style>
+		
+		td {
+			text-align: right;
+		}
+		</style>
+	</head>
+	<body>
+		<h1><%= title %></h1>
+		<table border="1">
+			<tr>
+				<th>랭킹</th>
+				<th>회사명</th>
+				<th>종목코드</th>
+				<th>시총</th>
+				<th>호가단위</th>
+			</tr>
+			<% kospi200List.forEach((stock, index) => { %>
+			<tr>
+				<td><%= stock.Ranking %></td>
+				<td><a href="/stock/<%= stock.StockCode %>"><%= stock.CompanyName %></a></td>
+				<td><%= stock.StockCode %></td>
+				<td><%= stock.MarketSum %></td>
+				<td><%= stock.AskingPriceUnit %></td>
+			</tr>
+			<% }) %>
+		</table>
+	</body>
+</html>

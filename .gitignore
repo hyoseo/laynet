@@ -263,3 +263,4 @@ __pycache__/
 /laynet/env
 /laynet/config.py
 /laynet.Web/config.js
+/laynet.Web/views/test.html

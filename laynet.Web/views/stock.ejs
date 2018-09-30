@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<title><%= title %></title>
+		<style>
+		
+		td {
+			text-align: right;
+		}
+		</style>
+	</head>
+	<body>
+		<h1><%= title %></h1>
+		<table border="1">
+			<tr>
+				<th>주가</th>
+				<th>방향</th>
+				<th>증감량</th>
+				<th>외인거래량</th>
+				<th>기관거래량</th>
+				<th>날짜</th>
+			</tr>
+			<% tradeList.forEach((trade, index) => { %>
+			<tr>
+				<td style="color:<%= (trade.Delta > 0) ? "red" : "blue" %>"><%= trade.StockPrice %></td>
+				<td><%= trade.CurveType %></td>
+				<td style="color:<%= (trade.Delta > 0) ? "red" : "blue" %>"><%= trade.Delta %></td>
+				<td style="color:<%= (trade.ForeignersVolume > 0) ? "red" : "blue" %>"><%= trade.ForeignersVolume %></td>
+				<td style="color:<%= (trade.InstitutionsVolume > 0) ? "red" : "blue" %>"><%= trade.InstitutionsVolume %></td>
+				<td><%= trade.TradeDate.toDateString() %></td>
+			</tr>
+			<% }) %>
+		</table>
+	</body>
+</html>
