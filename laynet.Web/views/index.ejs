@@ -1,33 +1,135 @@
 ﻿<!DOCTYPE html>
-<html>
-	<head>
-		<title><%= title %></title>
-		<style>
-		
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+	<title><%= title %></title>
+    
+    <style>
+        *{
+            box-sizing: border-box;
+        }
+        
+        a{
+            text-decoration: none;
+        }
+                
+        body{
+            margin:0;
+        }
+
 		td {
 			text-align: right;
 		}
-		</style>
-	</head>
-	<body>
-		<h1><%= title %></h1>
-		<table border="1">
-			<tr>
-				<th>랭킹</th>
-				<th>회사명</th>
-				<th>종목코드</th>
-				<th>시총</th>
-				<th>호가단위</th>
-			</tr>
-			<% kospi200List.forEach((stock, index) => { %>
-			<tr>
-				<td><%= stock.Ranking %></td>
-				<td><a href="/stock/<%= stock.StockCode %>"><%= stock.CompanyName %></a></td>
-				<td><%= stock.StockCode %></td>
-				<td><%= stock.MarketSum %></td>
-				<td><%= stock.AskingPriceUnit %></td>
-			</tr>
-			<% }) %>
-		</table>
-	</body>
+        
+        header{
+            background-color: black;
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 150px;
+            min-height: 80px;
+        }
+        
+        .header_logo{
+            position: absolute;
+            left:50%;
+            width: 200px;
+            text-align: center;
+            margin: 0 0 0 -100px;
+        }
+        .header_logo h1{
+            font-family: "Arnhem",Times,Courier,serif;
+            color: white;
+            margin: 0;
+        }
+        .header_logo img{
+            width:90px;
+            height:90px;
+            margin-top: 10px;
+        }
+        
+        .header_nav{
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            width: 1000px;
+            margin: 0 0 0 -500px;            
+        }
+        .header_nav a{
+            color: white;
+        }
+        .header_nav a:hover{
+            color: red;
+        }
+        
+        .header_nav_menu{
+            float: left;
+            width: 300px;
+        }
+        .header_nav_menu ul{
+            list-style: none;
+        }
+        .header_nav_menu li{
+            float: left;
+            margin-right: 10px;
+            font-size: 23px;
+            font-family: "Arnhem",Times,Courier,serif;           
+        }
+
+        .header_nav_tools{
+            float: right;
+            width: 300px;
+        }
+        .header_nav_tools ul{
+            list-style: none;
+        }
+        .header_nav_tools li{
+            float: right;
+            margin-right: 10px;
+            font-size: 23px;
+            font-family: "Arnhem",Times,Courier,serif;           
+        }
+    
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header_logo">
+            <img src="logo.png" alt="LAYNET">
+            <h1><%= title %></h1>            
+        </div>
+        <section class="header_nav">
+            <nav class="header_nav_menu">
+                <ul>
+                    <li><a href="/index.html">menu1</a></li>
+                    <li><a href="/index.html">menu2</a></li>
+                </ul>
+            </nav>
+            <nav class="header_nav_tools">
+                <ul>
+                    <li><a href="/index.html">tool1</a></li>
+                    <li><a href="/index.html">tool2</a></li>
+                </ul>                
+            </nav>
+        </section>        
+    </header>
+	<table border="1">
+		<tr>
+			<th>랭킹</th>
+			<th>회사명</th>
+			<th>종목코드</th>
+			<th>시총</th>
+			<th>호가단위</th>
+		</tr>
+		<% kospi200List.forEach((stock, index) => { %>
+		<tr>
+			<td><%= stock.Ranking %></td>
+			<td><a href="/stock/<%= stock.StockCode %>"><%= stock.CompanyName %></a></td>
+			<td><%= stock.StockCode %></td>
+			<td><%= stock.MarketSum %></td>
+			<td><%= stock.AskingPriceUnit %></td>
+		</tr>
+		<% }) %>
+	</table>
+</body>
 </html>

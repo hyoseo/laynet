@@ -5,7 +5,7 @@ router.get('/', async (req, res, next) => {
     try {
         let result = await db.getKospi200();
 
-        res.render('index', { title: 'Kospi200', kospi200List: result.rows });
+        res.render('index', { title: 'LAYNET', kospi200List: result.rows });
     } catch (err) {
         next(err);
     }
