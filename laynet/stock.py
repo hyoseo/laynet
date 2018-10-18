@@ -178,6 +178,92 @@ def update_curve_type_and_delta(dayTradeList):
             else:
                 dayTradeList[prev][CURVE_TYPE] = dayTradeList[cur][CURVE_TYPE]
     return
+def get_today_recommendation_list(baseDate, baseDays):
+    kospiTop200 = db.getKospi200()
+    if kospiTop200 == None:
+        return None
+    
+    baseInfList = []
+
+    theDate = baseDate - datetime.timedelta(days=baseDays)
+    for company in kospiTop200:
+        stockCode = company[2]
+
+        bigPlayerData = db.getBigPlayersDataAfterTheDate(stockCode, theDate)
+        if bigPlayerData == None:
+            continue
+
+        # Curve 마지막 날짜를 주어서 그 이후에 어떤식으로 주가가 진행되었는지 가져온다.
+        sumAfterCurve = 0
+        stockTrade = db.getStockTradeAfterTheDate(stockCode, bigPlayerData[0][2])
+        for trade in stockTrade:
+            sumAfterCurve += trade[6] + trade[7]
+
+        sumCurveHighVolume = 0
+        sumCurveLowVolume = 0
+
+        compareValue = 0 if 'CURVE_HIGH' == bigPlayerData[0][3] else 1
+
+        for i in range(len(bigPlayerData)):
+            if i % 2 == compareValue:
+                sumCurveHighVolume += bigPlayerData[i][6]
+            else:
+                sumCurveLowVolume += bigPlayerData[i][6]
+
+        # 상승폭과 하락폭이 엇비슷한지 계산한다.
+        curveSimilarValue = calculate_similar_value(sumCurveHighVolume, sumCurveLowVolume)
+        curveSuperiority = calculate_superiority(sumCurveHighVolume, sumCurveLowVolume)
+
+        # 현재까지 포함하여 계산한다.
+        if stockTrade[0][5] == 'DOWNWARD':
+            sumCurveLowVolume += sumAfterCurve
+        else:
+            sumCurveHighVolume += sumAfterCurve
+
+        currentSimilarValue = calculate_similar_value(sumCurveHighVolume, sumCurveLowVolume)
+        # 판 것과 산 것의 양 차이가 많이 났다가 줄어 드는 것은 원하는 현상이 아니다.
+        # 줄어 든게 더 줄어 들기 보단 줄어 들었으니 늘어날 확률이 높다.
+        if curveSimilarValue < currentSimilarValue:
+            continue;
+
+        # 차이가 너무 미세한 것은 투자 가치가 없다.
+        curveCurrentSimilarDiff = round(abs(curveSimilarValue-currentSimilarValue),2)
+        if curveCurrentSimilarDiff < 0.03:
+            continue;
+
+        currentSuperiority = calculate_superiority(sumCurveHighVolume, sumCurveLowVolume)
+        # 현재 상태가 HIGH_BIG인 것은 제외한다. 기준 기간동안 판 것보다 더 샀다는 것이므로 팔 확률이 높다.
+        if currentSuperiority == 'HIGH_BIG':
+            continue;
+           
+        # HIGH_BIG -> LOW_BIG으로 바꼈고 그 차이가 큰 것을 찾자. 그 차이가 크고 LOW_BIG이 1에 가까울 수록 산 만큼 팔았다는 것이다.
+        # 반대로 LOW_BIG이 1과 멀수록 산 것보다 훨씬 많이 팔았다는 것이다.
+        baseInfList.append((company[1], stockCode, baseDate, baseDays, len(bigPlayerData), curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority))
+
+    return baseInfList#sorted(sorted(baseInfList, key=lambda baseInf : baseInf[3], reverse=True), key=lambda baseInf : baseInf[7], reverse=True)
+def update_today_recommendation_stock():
+    baseDate = db.getLatestStockScrapingDate()
+    if baseDate == None:
+        return None
+
+    for stock in get_today_recommendation_list(baseDate, 15):
+        db.addTodayRecommendation(*stock)
+
+    for stock in get_today_recommendation_list(baseDate, 30):
+        db.addTodayRecommendation(*stock)
+
+    return
+def calculate_superiority(a, b):
+    a = abs(a)
+    b = abs(b)
+
+    return 'LOW_BIG' if a < b else 'HIGH_BIG'
+
+def calculate_similar_value(a, b):
+    a = abs(a)
+    b = abs(b)
+
+    return round((a / b if a < b else b / a), 2)
 
 # 주식 호가 단위(10만원 이상은 500원씩)와 시총 대비 거래량 총 금액 비율도 중요하다.
 # MAX치의 0.1%이다. 즉, ~1000원 미만 : 1원, ~5000원, ~10000원, ~50000원, ~100000원, ~500000원, 50만원 이상
@@ -188,7 +274,7 @@ def update_curve_type_and_delta(dayTradeList):
 # 그 Delta값들의 절대값을 모두 합한 후 총 수로 나눈다. 그러면 변동폭 평균 값이 나온다.
 # 이 평균 값으로 KOSPI 200 종목의 순위를 매기자.
 # 이 Delta값은 Percentage로 해야 한다.
-# CurveDay Delta 3%, CurveDady Delta -3% 이렇게 있으면 변동폭 평균은 3%가 된다.
+# CurveDay Delta 3%, CurveDay Delta -3% 이렇게 있으면 변동폭 평균은 3%가 된다.
 
 # 변동빈도 점수 알고리즘
 # 30일 기준으로 얼마나 자주 Curve가 반복되었는지 계산한다. 이는 C++로 만들어 놓은 것을 확인하자.

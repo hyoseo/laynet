@@ -153,3 +153,85 @@ def updateBigPlayersData(stockCode):
         return False
 
     return True
+def getBigPlayersDataAfterTheDate(stockCode, date):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_big_players_data_after_the_date]
+        @stockCode =?
+      , @date =?;
+    SELECT @rv AS return_value;
+    """
+    params = (stockCode, date)
+
+    cursor.execute(sql, params)
+    rows = cursor.fetchall()
+    cursor.nextset()
+
+    if cursor.fetchval() == -1:
+        return None
+
+    return rows
+def getStockTradeAfterTheDate(stockCode, date):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_stock_trade_after_the_date]
+        @stockCode =?
+      , @date =?;
+    SELECT @rv AS return_value;
+    """
+    params = (stockCode, date)
+
+    cursor.execute(sql, params)
+    rows = cursor.fetchall()
+    cursor.nextset()
+
+    if cursor.fetchval() == -1:
+        return None
+
+    return rows
+
+def addTodayRecommendation(companyName, stockCode, baseDate, period, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_add_today_recommendation]
+        @companyName =?
+      , @stockCode =?
+      , @baseDate =?
+      , @period =?
+      , @variation =?
+      , @curveSimilarValue =?
+      , @curveSuperiority =?
+      , @currentSimilarValue =?
+      , @currentSuperiority =?;
+    SELECT @rv AS return_value;
+    """
+    params = (companyName, stockCode, baseDate, period, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority)
+
+    cursor.execute(sql, params)
+    return_value = cursor.fetchval()
+
+    return return_value
+
+def getLatestStockScrapingDate():
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_latest_stock_trade_scraping_date];
+    SELECT @rv AS return_value;
+    """
+
+    cursor.execute(sql)
+    row = cursor.fetchone()
+    cursor.nextset()
+    
+    if cursor.fetchval() == -1:
+        return None
+
+    return row[0]
