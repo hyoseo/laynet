@@ -2,134 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-	<title><%= title %></title>
-    
-    <style>
-        *{
-            box-sizing: border-box;
-        }
-        
-        a{
-            text-decoration: none;
-        }
-                
-        body{
-            margin:0;
-        }
+    <title><%= title %></title>
 
-		td {
-			text-align: right;
-		}
-        
-        header{
-            background-color: black;
-            position: absolute;
-            top: 0;
-            width: 100%;
-            height: 150px;
-            min-height: 80px;
-        }
-        
-        .header_logo{
-            position: absolute;
-            left:50%;
-            width: 200px;
-            text-align: center;
-            margin: 0 0 0 -100px;
-        }
-        .header_logo h1{
-            font-family: "Arnhem",Times,Courier,serif;
-            color: white;
-            margin: 0;
-        }
-        .header_logo img{
-            width:90px;
-            height:90px;
-            margin-top: 10px;
-        }
-        
-        .header_nav{
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            width: 1000px;
-            margin: 0 0 0 -500px;            
-        }
-        .header_nav a{
-            color: white;
-        }
-        .header_nav a:hover{
-            color: red;
-        }
-        
-        .header_nav_menu{
-            float: left;
-            width: 300px;
-        }
-        .header_nav_menu ul{
-            list-style: none;
-        }
-        .header_nav_menu li{
-            float: left;
-            margin-right: 10px;
-            font-size: 23px;
-            font-family: "Arnhem",Times,Courier,serif;           
-        }
+    <link rel="stylesheet" href="css/index.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="js/date-min.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(draw);
 
-        .header_nav_tools{
-            float: right;
-            width: 300px;
-        }
-        .header_nav_tools ul{
-            list-style: none;
-        }
-        .header_nav_tools li{
-            float: right;
-            margin-right: 10px;
-            font-size: 23px;
-            font-family: "Arnhem",Times,Courier,serif;           
-        }
-    
-    </style>
+      function draw() {
+        const data = new google.visualization.DataTable();
+          data.addColumn('string', 'trade date');
+          data.addColumn('number', '기관');
+          data.addColumn('number', '외인');
+          data.addColumn('number', '합');
+
+		  tradeList = [];
+		<% todayBestTradeList.forEach((elem) => { %>
+			tradeList.push({TradeDate: convertDateToMonthDays('<%= elem.TradeDate %>'), InstitutionsVolume: <%= elem.InstitutionsVolume %>, ForeignersVolume: <%= elem.ForeignersVolume %>});
+		<% }) %>
+          tradeList.reverse();
+          tradeList.forEach((elem) => {
+              data.addRow([elem.TradeDate, elem.InstitutionsVolume, elem.ForeignersVolume, elem.InstitutionsVolume+elem.ForeignersVolume])
+          });      
+
+        const options = {
+          title : '기관과 외인 거래량',
+          vAxis: {title: 'volume'},
+          hAxis: {title: 'trade date'},
+          seriesType: 'bars',
+          series: {2: {type: 'line'}}
+        };
+
+        const chart = new google.visualization.ComboChart(document.getElementById('best_stock_chart'));
+        chart.draw(data, options);
+      }
+    </script>
 </head>
 <body>
     <header>
         <div class="header_logo">
-            <img src="logo.png" alt="LAYNET">
-            <h1><%= title %></h1>            
+            <a href="/"><img src="logo.png" alt="LAYNET"></a>
+            <a href="/" class="a_block">LAYNET</a>
         </div>
         <section class="header_nav">
             <nav class="header_nav_menu">
                 <ul>
-                    <li><a href="/index.html">menu1</a></li>
-                    <li><a href="/index.html">menu2</a></li>
+                    <li><a href="/">오늘의 추천 종목들</a></li>
+                    <li><a href="/">코스피200</a></li>
                 </ul>
             </nav>
             <nav class="header_nav_tools">
                 <ul>
-                    <li><a href="/index.html">tool1</a></li>
-                    <li><a href="/index.html">tool2</a></li>
+                    <li><a href="/">사이트맵</a></li>
+                    <li><a href="/">About</a></li>
                 </ul>                
             </nav>
         </section>        
     </header>
-	<table border="1">
-		<tr>
-			<th>랭킹</th>
-			<th>회사명</th>
-			<th>종목코드</th>
-			<th>시총</th>
-			<th>호가단위</th>
-		</tr>
-		<% kospi200List.forEach((stock, index) => { %>
-		<tr>
-			<td><%= stock.Ranking %></td>
-			<td><a href="/stock/<%= stock.StockCode %>"><%= stock.CompanyName %></a></td>
-			<td><%= stock.StockCode %></td>
-			<td><%= stock.MarketSum %></td>
-			<td><%= stock.AskingPriceUnit %></td>
-		</tr>
-		<% }) %>
-	</table>
+    <main>
+        <section class="content">
+            <div id="best_stock_desc">
+               <h2><strong style="color:dimgray;"><%= baseDate %></strong> 추천 종목 : <strong style="color:crimson"><%= todayBestTradeList[0].CompanyName %></strong></h2>
+            </div>
+            <div id="best_stock_chart">
+            </div>
+            <div id="caution">
+                <img src="caution.png">
+                <p>이 투자정보를 사용하여 발생하는 모든 결과에 대한 책임은 투자자 본인에게 있습니다.</p>
+            </div>
+            <div id="box3">box3</div>
+            <div id="box4">box4</div>
+            <div id="box5">box5</div>
+            <div id="box6">box6</div>
+        </section>
+    </main>
+    <footer>   
+        stock analysis site
+    </footer>
 </body>
 </html>

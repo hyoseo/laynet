@@ -96,3 +96,28 @@ module.exports.getBigPlayersDataAfterTheDate = async (stockCode, date) => {
         throw err;
     }
 };
+
+module.exports.getTodayRecommendation = async (baseDate, period) => {
+    try {
+        let pool = await new sql.ConnectionPool(config.db).connect();
+
+        let result = await pool.request()
+            .input('baseDate', sql.Date, baseDate)
+            .input('period', sql.SmallInt, period)
+            .execute('sp_get_today_recommendation');
+        if (result.returnValue === -1) {
+            throw result.result;
+        }
+
+        sql.close();
+
+        return {
+            returnValue: result.returnValue,
+            rows: result.recordset
+        };
+    } catch (err) {
+        sql.close();
+
+        throw err;
+    }
+};

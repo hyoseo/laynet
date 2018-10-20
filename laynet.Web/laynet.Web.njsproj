@@ -30,6 +30,9 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="cache.js">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="config.js">
       <SubType>Code</SubType>
     </Compile>
@@ -37,6 +40,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="db.js">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="public\js\date-min.js">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="routes\index.js">
@@ -47,7 +53,9 @@
     </Compile>
     <Compile Include="server.js" />
     <Content Include="package.json" />
+    <Content Include="public\logo.png" />
     <Content Include="README.md" />
+    <Content Include="public\css\index.css" />
     <Content Include="views\error.ejs">
       <SubType>Code</SubType>
     </Content>
@@ -57,14 +65,13 @@
     <Content Include="views\stock.ejs">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="views\test.html">
-      <SubType>Code</SubType>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="public\" />
+    <Folder Include="public\js\" />
     <Folder Include="routes\" />
     <Folder Include="views\" />
+    <Folder Include="public\css\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="False" />

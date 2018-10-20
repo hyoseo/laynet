@@ -108,6 +108,7 @@
     <Build Include="dbo\Tables\TodayRecommendation.sql" />
     <Build Include="dbo\Stored Procedures\sp_add_today_recommendation.sql" />
     <Build Include="dbo\Stored Procedures\sp_get_latest_stock_trade_scraping_date.sql" />
+    <Build Include="dbo\Stored Procedures\sp_get_today_recommendation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="laynet.Database.LHS.publish.xml" />
