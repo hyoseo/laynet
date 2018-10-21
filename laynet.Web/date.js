@@ -1,10 +1,20 @@
-﻿let convertDate = dt => {
+﻿function convertDate(dt)
+{
     day = dt.getDate();
     day = (day >= 10) ? day : '0' + day;
     month = dt.getMonth() + 1;
     month = (month >= 10) ? month : '0' + month;
 
     return dt.getFullYear() + '-' + month + '-' + day;
+}
+
+module.exports.convertDate = convertDate;
+
+module.exports.getDateDaysAgoFromBaseDate = (baseDate, days) => {
+    dt = new Date();
+    dt.setDate(baseDate.getDate() - days);
+
+    return dt;
 };
 
 module.exports.getDateDaysAgo = days => {

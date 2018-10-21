@@ -143,7 +143,7 @@ main {
 
 #caution {
     border: 3px dashed firebrick;
-    grid-column: 1/4;
+    grid-column: 1/3;
 }
 
     #caution img {
@@ -161,11 +161,49 @@ main {
         line-height: 200%;
     }
 
-#box3 {
+#past_best_stocks {
     border-top: 1px solid dimgray;
-    background-color: darkorange;
-    grid-column: 4/7;
+    grid-column: 3/7;
+    border-bottom: 1px solid dimgray;
 }
+
+    #past_best_stocks h2 {
+        margin: 0;
+        padding: 10px 10px 10px 40px;
+        border-bottom: 1px solid #D5D5D5;
+    }
+
+    #past_best_stocks table {
+        margin-top: 3px;
+        border-collapse: collapse;
+    }
+
+        #past_best_stocks table thead th {
+            border-bottom: 1px solid #D5D5D5;
+            padding-bottom: 2px;
+            font: normal 16px "Jeju Gothic";
+        }
+
+        #past_best_stocks table tbody th {
+            font: normal 14px "Jeju Gothic";
+        }
+
+        #past_best_stocks table tbody td {
+            text-align: right;
+            font: normal 14px "Jeju Gothic";
+        }
+
+        #past_best_stocks table tbody tr:nth-child(1) {
+            height: 7px;
+        }
+
+        #past_best_stocks table tbody tr:nth-child(10) {
+            height: 5px;
+        }
+
+        #past_best_stocks table tbody td:nth-child(4) {
+            text-align: center;
+        }
 
 #box4 {
     background-color: burlywood;

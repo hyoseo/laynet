@@ -10,16 +10,23 @@ router.get('/', async (req, res, next) => {
             cache.kospi200 = result.rows;
         }
 
-        baseDate = date.getDateDaysAgo(4);
-        if (cache.todayRecommendation15Period.has(baseDate) === false) {
-            let result = await db.getTodayRecommendation(baseDate, 15);
+        let result = await db.getLatestStockScrapingDate();
+        baseDate = result.rows[0].TradeDate;
+        baseDateKey = date.convertDate(baseDate);
 
-            cache.todayRecommendation15Period.set(baseDate, result.rows);
-        }
+        if (cache.todayRecommendation15Period.has(baseDateKey) === false) {
+            result = await db.getTodayRecommendation(baseDate, 15);
 
-        let result = await db.getStockTradeAfterTheDate(cache.todayRecommendation15Period.get(baseDate)[0].StockCode, date.getDateDaysAgo(19));
+            cache.todayRecommendation15Period.set(baseDateKey, result.rows);
+        }       
 
-        res.render('index', { title: 'LAYNET', baseDate: baseDate, kospi200List: cache.kospi200, todayBestTradeList: result.rows });
+        result = await db.getStockTradeAfterTheDate(cache.todayRecommendation15Period.get(baseDateKey)[0].StockCode
+            , date.getDateDaysAgoFromBaseDate(baseDate, 15));
+
+        res.render('index', {
+            title: 'LAYNET', baseDate: baseDateKey
+            , kospi200List: cache.kospi200, todayBestTradeList: result.rows
+        });
     } catch (err) {
         next(err);
     }
