@@ -194,7 +194,7 @@ def getStockTradeAfterTheDate(stockCode, date):
 
     return rows
 
-def addTodayRecommendation(companyName, stockCode, baseDate, period, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority):
+def addTodayRecommendation(companyName, stockCode, baseDate, period, basePrice, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority, searchDate):
     cursor = connect()
 
     sql = """\
@@ -204,14 +204,16 @@ def addTodayRecommendation(companyName, stockCode, baseDate, period, variation, 
       , @stockCode =?
       , @baseDate =?
       , @period =?
+      , @basePrice =?
       , @variation =?
       , @curveSimilarValue =?
       , @curveSuperiority =?
       , @currentSimilarValue =?
-      , @currentSuperiority =?;
+      , @currentSuperiority =?
+      , @searchDate =?;
     SELECT @rv AS return_value;
     """
-    params = (companyName, stockCode, baseDate, period, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority)
+    params = (companyName, stockCode, baseDate, period, basePrice, variation, curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority, searchDate)
 
     cursor.execute(sql, params)
     return_value = cursor.fetchval()

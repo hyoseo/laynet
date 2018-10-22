@@ -238,7 +238,7 @@ def get_today_recommendation_list(baseDate, baseDays):
            
         # HIGH_BIG -> LOW_BIG으로 바꼈고 그 차이가 큰 것을 찾자. 그 차이가 크고 LOW_BIG이 1에 가까울 수록 산 만큼 팔았다는 것이다.
         # 반대로 LOW_BIG이 1과 멀수록 산 것보다 훨씬 많이 팔았다는 것이다.
-        baseInfList.append((company[1], stockCode, baseDate, baseDays, len(bigPlayerData), curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority))
+        baseInfList.append((company[1], stockCode, baseDate, baseDays, stockTrade[0][3], len(bigPlayerData), curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority, baseDate))
 
     return baseInfList#sorted(sorted(baseInfList, key=lambda baseInf : baseInf[3], reverse=True), key=lambda baseInf : baseInf[7], reverse=True)
 def update_today_recommendation_stock():
