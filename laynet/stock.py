@@ -178,6 +178,7 @@ def update_curve_type_and_delta(dayTradeList):
             else:
                 dayTradeList[prev][CURVE_TYPE] = dayTradeList[cur][CURVE_TYPE]
     return
+
 def get_today_recommendation_list(baseDate, baseDays):
     kospiTop200 = db.getKospi200()
     if kospiTop200 == None:
@@ -241,6 +242,7 @@ def get_today_recommendation_list(baseDate, baseDays):
         baseInfList.append((company[1], stockCode, baseDate, baseDays, stockTrade[0][3], len(bigPlayerData), curveSimilarValue, curveSuperiority, currentSimilarValue, currentSuperiority, baseDate))
 
     return baseInfList#sorted(sorted(baseInfList, key=lambda baseInf : baseInf[3], reverse=True), key=lambda baseInf : baseInf[7], reverse=True)
+
 def update_today_recommendation_stock():
     baseDate = db.getLatestStockScrapingDate()
     if baseDate == None:
@@ -264,6 +266,17 @@ def calculate_similar_value(a, b):
     b = abs(b)
 
     return round((a / b if a < b else b / a), 2)
+
+def update_past_recommendation_results():
+    pastStocks = db.getPastRecommendation()
+
+    for pastStock in pastStocks:
+
+        # 최소 3%
+
+        pass
+
+    return
 
 # 주식 호가 단위(10만원 이상은 500원씩)와 시총 대비 거래량 총 금액 비율도 중요하다.
 # MAX치의 0.1%이다. 즉, ~1000원 미만 : 1원, ~5000원, ~10000원, ~50000원, ~100000원, ~500000원, 50만원 이상

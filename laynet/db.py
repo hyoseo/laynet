@@ -237,3 +237,20 @@ def getLatestStockScrapingDate():
         return None
 
     return row[0]
+
+def getPastRecommendation():
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_past_recommendation];
+    SELECT @rv AS return_value;
+    """
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.nextset()
+
+    if cursor.fetchval() == -1:
+        return None
+
+    return rows
