@@ -254,3 +254,67 @@ def getPastRecommendation():
         return None
 
     return rows
+
+def addPastRecommendationResults(companyName, stockCode, baseDate, period, basePrice, successDate, successPrice):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_add_past_recommendation_results]
+        @companyName =?
+      , @stockCode =?
+      , @baseDate =?
+      , @period =?
+      , @basePrice =?
+      , @successDate =?
+      , @successPrice =?;
+    SELECT @rv AS return_value;
+    """
+
+    params = (companyName, stockCode, baseDate, period, basePrice, successDate, successPrice)
+
+    cursor.execute(sql, params)
+    return_value = cursor.fetchval()
+
+    return return_value
+
+def getMaxPercentageAfterRecommendation(stockCode, baseDate):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_max_percentage_after_recommendation]
+        @stockCode =?
+      , @baseDate =?;
+    SELECT @rv AS return_value;
+    """
+
+    params = (stockCode, baseDate)
+
+    cursor.execute(sql, params)
+    row = cursor.fetchone()
+    cursor.nextset()
+    
+    if cursor.fetchval() == -1:
+        return None
+
+    return row[0]
+
+def updatePastRecommendationSearchDate(stockCode, baseDate, period, searchDate):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_update_past_recommendation_search_date]
+        @stockCode =?
+      , @baseDate =?
+      , @period =?
+      , @searchDate =?;
+    SELECT @rv AS return_value;
+    """
+    params = (stockCode, baseDate, period, searchDate)
+
+    cursor.execute(sql, params)
+    return_value = cursor.fetchval()
+
+    return return_value

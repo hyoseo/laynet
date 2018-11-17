@@ -269,12 +269,36 @@ def calculate_similar_value(a, b):
 
 def update_past_recommendation_results():
     pastStocks = db.getPastRecommendation()
+    
+    lastSearchDate = datetime.date.today()
 
     for pastStock in pastStocks:
+        stockTrade = db.getStockTradeAfterTheDate(pastStock[1], pastStock[11])
+        if stockTrade == None:
+            continue
 
-        # 최소 3%
+        minRate = db.getMaxPercentageAfterRecommendation(pastStock[1], pastStock[2])
+        if minRate == None:
+            minRate = 2.9 # 최소 3% 이상
 
-        pass
+        stockTrade.reverse()
+        for trade in stockTrade:
+            delta = trade[3] - pastStock[4]
+            incRate = round((delta / pastStock[4]) * 100, 1)
+            if incRate <= minRate:
+                continue
+
+            minRate = incRate
+
+            diffDays = (trade[2] - pastStock[2]).days
+
+            annualYeild = round((360 / diffDays) * incRate, 1)
+
+            #(@companyName, @stockCode, @baseDate, @period, @basePrice, @successDate, @successPrice)
+            db.addPastRecommendationResults(pastStock[0], pastStock[1], pastStock[2], pastStock[3], pastStock[4], trade[2], trade[3])
+
+            
+        db.updatePastRecommendationSearchDate(pastStock[1], pastStock[2], pastStock[3], lastSearchDate)
 
     return
 

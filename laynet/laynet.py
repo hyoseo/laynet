@@ -20,5 +20,6 @@ stock.scrape_kospi_top200(driver)
 stock.scrape_kospi_top200_stock_trade(driver)
 stock.update_kospi_top200_big_players_data()
 stock.update_today_recommendation_stock()
+stock.update_past_recommendation_results()
     
 driver.quit()

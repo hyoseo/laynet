@@ -111,6 +111,9 @@
     <Build Include="dbo\Stored Procedures\sp_get_today_recommendation.sql" />
     <Build Include="dbo\Stored Procedures\sp_get_past_recommendation.sql" />
     <Build Include="dbo\Tables\PastRecommendationResults.sql" />
+    <Build Include="dbo\Stored Procedures\sp_add_past_recommendation_results.sql" />
+    <Build Include="dbo\Stored Procedures\sp_get_max_percentage_after_recommendation.sql" />
+    <Build Include="dbo\Stored Procedures\sp_update_past_recommendation_search_date.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="laynet.Database.LHS.publish.xml" />
