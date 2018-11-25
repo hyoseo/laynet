@@ -6,6 +6,19 @@ NAVER_FINANCE_BASE_URL = 'http://finance.naver.com'
 SISE_ENTRYJONGMOK_URL = '/sise/entryJongmok.nhn?&page=%d'
 TRADING_TREND_URL = '/item/frgn.nhn?code=%s&page=%d'
 ITEM_ANALYSIS_URL = '/item/coinfo.nhn?code=%s'
+SISE_KOSPI_URL = '/sise/sise_index_day.nhn?code=KOSPI&page=%d'
+
+# https://finance.naver.com/sise/sise_index_day.nhn?code=KOSPI&page=1
+
+def scrape_kospi_price(driver):
+    driver.get(NAVER_FINANCE_BASE_URL + SISE_KOSPI_URL % 1)
+    
+    kospiDate = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date"]')
+    kospiPrice = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date"]/following-sibling::*[1]')
+
+    print(tbl)
+
+    pass
 
 def scrape_kospi_top200(driver):
     ranking = 1
