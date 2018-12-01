@@ -62,6 +62,9 @@
     <Content Include="views\index.ejs">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="views\past.ejs">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="views\stock.ejs">
       <SubType>Code</SubType>
     </Content>

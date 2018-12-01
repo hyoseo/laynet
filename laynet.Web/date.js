@@ -11,10 +11,9 @@
 module.exports.convertDate = convertDate;
 
 module.exports.getDateDaysAgoFromBaseDate = (baseDate, days) => {
-    dt = new Date();
-    dt.setDate(baseDate.getDate() - days);
+    baseDate.setDate(baseDate.getDate() - days);
 
-    return dt;
+    return baseDate;
 };
 
 module.exports.getDateDaysAgo = days => {

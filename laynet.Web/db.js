@@ -144,3 +144,25 @@ module.exports.getLatestStockScrapingDate = async () => {
         throw err;
     }
 };
+
+module.exports.getPastRecommendationResults = async () => {
+    try {
+        let pool = await new sql.ConnectionPool(config.db).connect();
+
+        let result = await pool.request().execute('sp_get_past_recommendation_results');
+        if (result.returnValue === -1) {
+            throw result.result;
+        }
+
+        sql.close();
+
+        return {
+            returnValue: result.returnValue,
+            rows: result.recordset
+        };
+    } catch (err) {
+        sql.close();
+
+        throw err;
+    }
+};
