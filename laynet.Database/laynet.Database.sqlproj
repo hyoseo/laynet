@@ -114,6 +114,11 @@
     <Build Include="dbo\Stored Procedures\sp_add_past_recommendation_results.sql" />
     <Build Include="dbo\Stored Procedures\sp_get_max_percentage_after_recommendation.sql" />
     <Build Include="dbo\Stored Procedures\sp_update_past_recommendation_search_date.sql" />
+    <Build Include="dbo\Tables\KospiTrade.sql" />
+    <Build Include="dbo\Stored Procedures\sp_add_kospi_trade.sql" />
+    <Build Include="dbo\Stored Procedures\sp_get_latest_kospi_trade_date.sql" />
+    <Build Include="dbo\Stored Procedures\sp_get_kospi_trade_after_first_recommendation.sql" />
+    <Build Include="dbo\Stored Procedures\sp_get_ex_kospi200.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="laynet.Database.LHS.publish.xml" />

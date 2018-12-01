@@ -11,14 +11,40 @@ SISE_KOSPI_URL = '/sise/sise_index_day.nhn?code=KOSPI&page=%d'
 # https://finance.naver.com/sise/sise_index_day.nhn?code=KOSPI&page=1
 
 def scrape_kospi_price(driver):
-    driver.get(NAVER_FINANCE_BASE_URL + SISE_KOSPI_URL % 1)
+    latestTradeDate = db.getLatestKospiTradeDate()
+    if latestTradeDate == None:
+        latestTradeDate = (datetime.date.today() - datetime.timedelta(days=360))
     
-    kospiDate = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date"]')
-    kospiPrice = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date"]/following-sibling::*[1]')
+    latestTradeDate -= datetime.timedelta(days=1)
+    latestTradeDate = latestTradeDate.strftime('%Y.%m.%d')
 
-    print(tbl)
+    updateCompleted = False
+    page = 1    
+    while updateCompleted == False:
+        driver.get(NAVER_FINANCE_BASE_URL + SISE_KOSPI_URL % page)
+        kospiTrades = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date" or @class="rate_down" or @class="number_1"]')
+        #kospiPrice = driver.find_elements_by_xpath('//table[starts-with(@summary, "일별 시세표")]/tbody/tr/td[@class="date"]/following-sibling::*[1]')
 
-    pass
+        for oneTrade in range(0, int(len(kospiTrades) / 6)):
+            i = oneTrade * 6
+
+            tradeDate = kospiTrades[i].text
+            if tradeDate <= latestTradeDate:
+                updateCompleted = True
+                break
+
+            price             = float(kospiTrades[i+1].text.replace(',', ''))
+            delta             = float(kospiTrades[i+2].text.replace(',', ''))
+            percentage        = float(kospiTrades[i+3].text[:len(kospiTrades[i+3].text)-1])
+            volume            = int(kospiTrades[i+4].text.replace(',', ''))
+            TradeMoneyMillion = int(kospiTrades[i+5].text.replace(',', ''))
+
+            if percentage < 0:
+                delta = -delta
+
+            db.addKospiTrade(tradeDate, price, delta, percentage, volume, TradeMoneyMillion)
+
+        page += 1
 
 def scrape_kospi_top200(driver):
     ranking = 1
@@ -140,6 +166,17 @@ def scrape_kospi_top200_stock_trade(driver):
 
     for company in kospiTop200:
         scrape_stock_trade(driver, company[1], company[2])
+
+    exKospiTop200 = db.getExKospi200()
+    if exKospiTop200 == None:
+        return None
+
+    exKospiTop200Map = {}
+    for exKospi in exKospiTop200:
+        exKospiTop200Map[exKospi[1]] = exKospi[0]
+
+    for stockCode, companyName in exKospiTop200Map.items():
+        scrape_stock_trade(driver, companyName, stockCode)
 
 def update_kospi_top200_big_players_data():        
     kospiTop200 = db.getKospi200()
@@ -282,15 +319,23 @@ def calculate_similar_value(a, b):
 
 def update_past_recommendation_results():
     pastStocks = db.getPastRecommendation()
-    
+    kospiTrades = {}
+
+    for kospiTrade in db.getKospiTradeAfterFirstRecommendation():
+        kospiTrades[kospiTrade[0]] = kospiTrade[1:len(kospiTrade)]
+
     lastSearchDate = datetime.date.today()
 
     for pastStock in pastStocks:
-        stockTrade = db.getStockTradeAfterTheDate(pastStock[1], pastStock[11])
+        stockCode = pastStock[1]
+        baseDate = pastStock[2]
+        searchDate = pastStock[11]
+
+        stockTrade = db.getStockTradeAfterTheDate(stockCode, searchDate)
         if stockTrade == None:
             continue
 
-        minRate = db.getMaxPercentageAfterRecommendation(pastStock[1], pastStock[2])
+        minRate = db.getMaxPercentageAfterRecommendation(stockCode, baseDate)
         if minRate == None:
             minRate = 2.9 # 최소 3% 이상
 
@@ -301,17 +346,20 @@ def update_past_recommendation_results():
             if incRate <= minRate:
                 continue
 
+            tradeDate = trade[2]
+
             minRate = incRate
 
-            diffDays = (trade[2] - pastStock[2]).days
+            kospiChangeRate = round(((kospiTrades[tradeDate][0] - kospiTrades[baseDate][0]) / kospiTrades[baseDate][0]) * 100, 1)
 
-            annualYeild = round((360 / diffDays) * incRate, 1)
+            #diffDays = (trade[2] - pastStock[2]).days
+            #annualYeild = round((360 / diffDays) * incRate, 1)
 
             #(@companyName, @stockCode, @baseDate, @period, @basePrice, @successDate, @successPrice)
-            db.addPastRecommendationResults(pastStock[0], pastStock[1], pastStock[2], pastStock[3], pastStock[4], trade[2], trade[3])
+            db.addPastRecommendationResults(pastStock[0], stockCode, baseDate, pastStock[3], pastStock[4], tradeDate, trade[3], kospiChangeRate)
 
             
-        db.updatePastRecommendationSearchDate(pastStock[1], pastStock[2], pastStock[3], lastSearchDate)
+        db.updatePastRecommendationSearchDate(pastStock[1], baseDate, pastStock[3], lastSearchDate)
 
     return
 

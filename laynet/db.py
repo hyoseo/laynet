@@ -255,7 +255,7 @@ def getPastRecommendation():
 
     return rows
 
-def addPastRecommendationResults(companyName, stockCode, baseDate, period, basePrice, successDate, successPrice):
+def addPastRecommendationResults(companyName, stockCode, baseDate, period, basePrice, successDate, successPrice, kospiChangeRate):
     cursor = connect()
 
     sql = """\
@@ -267,11 +267,12 @@ def addPastRecommendationResults(companyName, stockCode, baseDate, period, baseP
       , @period =?
       , @basePrice =?
       , @successDate =?
-      , @successPrice =?;
+      , @successPrice =?
+      , @kospiChangeRate =?;
     SELECT @rv AS return_value;
     """
 
-    params = (companyName, stockCode, baseDate, period, basePrice, successDate, successPrice)
+    params = (companyName, stockCode, baseDate, period, basePrice, successDate, successPrice, kospiChangeRate)
 
     cursor.execute(sql, params)
     return_value = cursor.fetchval()
@@ -318,3 +319,78 @@ def updatePastRecommendationSearchDate(stockCode, baseDate, period, searchDate):
     return_value = cursor.fetchval()
 
     return return_value
+
+def getLatestKospiTradeDate():
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_latest_kospi_trade_date];
+    SELECT @rv AS return_value;
+    """
+
+    cursor.execute(sql)
+    row = cursor.fetchone()
+    cursor.nextset()
+    
+    if cursor.fetchval() == -1:
+        return None
+
+    return row[0]
+
+def addKospiTrade(tradeDate, price, delta, percentage, volume, TradeMoneyMillion):
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_add_kospi_trade]
+        @tradeDate =?
+      , @price =?
+      , @delta =?
+      , @percentage =?
+      , @volume =?
+      , @TradeMoneyMillion =?;
+    SELECT @rv AS return_value;
+    """
+    params = (tradeDate, price, delta, percentage, volume, TradeMoneyMillion)
+
+    cursor.execute(sql, params)
+    return_value = cursor.fetchval()
+
+    return return_value
+
+def getKospiTradeAfterFirstRecommendation():
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_kospi_trade_after_first_recommendation];
+    SELECT @rv AS return_value;
+    """
+
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.nextset()
+
+    if cursor.fetchval() == -1:
+        return None
+
+    return rows
+
+def getExKospi200():
+    cursor = connect()
+
+    sql = """\
+    DECLARE @rv INT;
+    EXEC @rv = [dbo].[sp_get_ex_kospi200];
+    SELECT @rv AS return_value;
+    """
+
+    cursor.execute(sql)
+    rows = cursor.fetchall()
+    cursor.nextset()
+
+    if cursor.fetchval() == -1:
+        return None
+
+    return rows
