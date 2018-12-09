@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= title %></title>
+
+    <link rel="stylesheet" href="css/index.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script type="text/javascript" src="js/date-min.js"></script>
+    <script type="text/javascript">     
+      $(() => {
+          // 화면이 줄어들었을 때 네비게이션에 햄버거 마크 혹은 X 마크가 나올지 결정하며
+          // 줄어들었을 때의 네비게이션을 표시할지 말지도 결정합니다.
+          $('.header_nav_icon').click(() => {
+              if ($('.svg_hamburger').is(':visible')) {
+                  $('header').height('100%');
+                  $("header").css({"zIndex":2});
+                  $('.header_nav').show();
+
+                  $('main').hide();
+                  $('.svg_hamburger').hide();
+                  $('.svg_x').show();
+              } else {
+                  $('header').height('150px');
+                  $('.header_nav').removeAttr("style");
+                  
+                  $('main').show();
+                  $('.svg_hamburger').show();
+                  $('.svg_x').hide();
+              }
+          });
+          
+          var rapidExtensionHandled = true;
+          
+          // 윈도우 사이즈가 줄어들 시 content 클래스의 사이즈도 변경하며 최종적으로 내부 요소들도 그에 맞게 사이즈가 변경됩니다
+          // 또한 chart를 다시 그려주며 사이즈를 변경해줍니다.
+          $(window).resize(() => {
+              let wndWidth = $(window).width();
+              if (wndWidth <= 1100) {
+                  $('.content').width(wndWidth);
+                  draw();
+                  rapidExtensionHandled = false;
+              } else {
+                  if (rapidExtensionHandled === false) {
+                      $('.content').width(1100);
+                      draw();
+                      rapidExtensionHandled = true;
+                  }
+              }
+          })
+      });
+
+	  <%
+	  function getRowColorBasedPercent(percent)
+	  {
+		if (percent >= 20)
+		{
+			return 'deeppink';
+		}
+		else if (percent >= 10)
+		{
+			return 'red';
+		}
+		else if (percent >= 5)
+		{
+			return 'firebrick';
+		}
+
+		return 'black';
+	  }
+	  %>
+    </script>
+</head>
+<body>
+    <header>
+        <div class="header_logo">
+            <a href="/"><img src="logo.png" alt="LAYNET"></a>
+            <a href="/" class="a_block">LAYNET</a>
+        </div>
+        <div class="header_nav_icon">
+            <!-- 벡터 그래픽을 이용해 hamburger 마크와 x마크를 그립니다.-->
+            <svg viewBox="0 0 23 16">
+                <path class='svg_hamburger' xmlns="http://www.w3.org/2000/svg" fill="#FFF" d="M0 0h23v2H0zM0 6h23v2H0zM0 12h23v2H0z"/>
+                <path class='svg_x' xmlns="http://www.w3.org/2000/svg" fill="#FFF" d="M10 7h1V6h1V5h1V4h1V3h1V2h1V0h-2v1h-1v1h-1v1h-1v1h-1v1H9v1H7V5H6V4H5V3H4V2H3V1H2V0H0v2h1v1h1v1h1v1h1v1h1v1h1v2H5v1H4v1H3v1H2v1H1v1H0v2h2v-1h1v-1h1v-1h1v-1h1v-1h1v-1h2v1h1v1h1v1h1v1h1v1h1v1h2v-2h-1v-1h-1v-1h-1v-1h-1v-1h-1V9h-1V8z"/>
+            </svg>
+        </div>
+            <!-- 메뉴입니다.-->
+        <section class="header_nav">
+            <nav class="header_nav_menu">
+                <ul>
+                    <li><a href="/past">과거 추천 종목들</a></li>
+                    <li><a href="/">코스피200</a></li>
+                </ul>
+            </nav>
+            <nav class="header_nav_tools">
+                <ul>
+                    <li><a href="/">사이트맵</a></li>
+                    <li><a href="/">About</a></li>
+                </ul>                
+            </nav>
+        </section>        
+    </header>
+    <main>
+        <section class="content">
+            <div class="trust">
+               <!-- 과거 추천 종목들에 대한 부분입니다. -->
+                <div id="past_best_stocks" style="margin: auto;">
+                    <h2><span>과거 추천 종목들</span></h2>
+                    <table>
+                       <colgroup>
+                           <col width="100">
+                           <col width="170">
+                           <col width="90">
+                           <col width="100">
+                           <col width="90">
+                           <col width="80">
+                           <col width="80">
+                           <col width="80">
+                       </colgroup>
+                        <thead>
+                            <tr>
+                                <th>추천일</th>
+                                <th>종목</th>
+                                <th>당시가</th>
+                                <th>최고달성일</th>
+                                <th>최고달성가</th>
+                                <th>증가량</th>
+                                <th>퍼센트</th>
+                                <th>코스피</th>
+                            </tr>                        
+                        </thead>
+						<tbody>
+							<tr>
+								<td></td>
+							</tr>
+
+							<% pastRecmdnResults.forEach((elem) => { %>
+							<tr>
+								<th><%= moment(elem.BaseDate).format('YYYY/MM/DD') %></th>
+								<td style="color: <%= getRowColorBasedPercent(elem.Percentage) %>"><%= elem.CompanyName %></td>
+								<td><%= elem.BasePrice %></td>
+								<td><%= moment(elem.SuccessDate).format('YYYY/MM/DD') %></td>
+								<td style="color: <%= getRowColorBasedPercent(elem.Percentage) %>"><%= elem.SuccessPrice %></td>
+								<td style="color: <%= getRowColorBasedPercent(elem.Percentage) %>">+<%= elem.Delta %></td>
+								<td style="color: <%= getRowColorBasedPercent(elem.Percentage) %>">+<%= elem.Percentage %>%</td>
+								<td style="color: <%= getRowColorBasedPercent(elem.KospiChangeRate) %>"><%= (elem.KospiChangeRate > 0) ? '+' : '' %><%= elem.KospiChangeRate %>%</td>
+							</tr>
+							<% }) %>
+
+							<tr>
+								<td></td>
+							</tr>                        
+						</tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- 임시로 놔둔 박스들입니다. 이후 컨텐츠가 추가될 수 있습니다. -->
+            <div id="box4">box4</div>
+            <div id="box5">box5</div>
+            <div id="box6">box6</div>
+        </section>
+    </main>
+    <footer>
+       <div class="footer_desc">
+           <p>다른 사람들이 욕심을 부릴 때 두려워하고, 다른 사람이 두려워할 때 욕심을 부려라</p>           
+       </div>
+       <div class="footer_contact">
+          <div>
+               <a href="/">Contact Us</a>              
+          </div>
+       </div>
+    </footer>
+</body>
+</html>
